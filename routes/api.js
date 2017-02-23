@@ -25,6 +25,7 @@ router.get('/:roll', function(req, res, next) {
       box.total = Number(roll);
       finishRoll();
     } else { // If not, check if 'd' is in the string
+
       if (roll.indexOf('d') === 0) {  // 1) if 'd' is the first item in the string:
         console.log('d is the first letter in the string');
         box.format = 'dString'
@@ -35,13 +36,48 @@ router.get('/:roll', function(req, res, next) {
         if (isXAnyPositiveNumber(rightOfFirstD)) { // 1a) if the only thing after it is a positive number (X):    dX
           box.format = 'dX';
           box.total = rollOneDi(Number(rightOfFirstD))
-        } else {  // 1b) if the thing after it is not a positve number
-
+        } else {  // 1b) if the thing after it is not a positve number, return an error
+          box.format = 'ERR';
         }
-      } else if (roll.indexOf('d') > 0){ // If 'd' is not in the string, return an error
-        console.log('d is NOT the first letter in the string');
+
+      } else if (roll.indexOf('d') > 0){ // if 'd' is in the string, but is not the first letter
+        console.log('d is NOT the first character in the string, but it is in the string');
         box.format = 'stringd'
-      } else {
+
+        let leftOfFirstD = roll.substring(0,roll.indexOf('d'));
+        console.log('left of first d:',leftOfFirstD);
+
+        if (isXAnyPositiveNumber(leftOfFirstD)) {   // if 'd' is to the right of a positive number (N)
+          let rightOfFirstD = roll.substring(roll.indexOf('d')+1,roll.length);
+          console.log("right of first d:",rightOfFirstD);
+
+          if (isXAnyPositiveNumber(rightOfFirstD)) { //if the only thing to the right of 'd' is a positive number (X):    NdX
+              console.log("rolling ",leftOfFirstD," dice, each with",rightOfFirstD,"sides");
+
+
+              box.format = 'NdX';
+              let numberOfDice = leftOfFirstD;
+              let numberOfSides = rightOfFirstD;
+              let diNumber = 1;
+
+              // roll N dice with X sides
+              while (diNumber <= numberOfDice) {
+                //console.log('roll #', diNumber);
+                box.total += rollOneDi(numberOfSides);
+                diNumber += 1;
+              }
+          } else {
+            // if the only thing to the right of 'd' is a string containing 'k', 'x' or a second 'd':
+          }
+
+        } else {
+          // if 'd' is to the right of anythin but a positive number
+          console.log('thing before first "d" is not a positive number');
+          box.format = 'ERR';
+          box.total = 'ERR';
+        }
+
+      } else {  // If 'd' is not in the string, return an error
         console.log('d is NOT in the string');
         box.format = 'ERR';
         box.total = 'ERR';
@@ -50,9 +86,6 @@ router.get('/:roll', function(req, res, next) {
     }
 
 
-      // 2) if 'd' is to the right of a positive number (N)
-            // 2a) if the only thing to the right of 'd' is a positive number (X):    NdX
-              // roll N dice with X sides, return total
             // 2b) if the only thing to the right of 'd' is a string containing 'k', 'x' or a second 'd':
                   // 2b1) if the string to the right of the first 'd' contains 'k', 'x' or a second 'd' sandwiched between two positive numbers:
                         //2b1a) if the middle letter in the second string is a 'k':
@@ -75,11 +108,10 @@ router.get('/:roll', function(req, res, next) {
 });
 
 function rollOneDi(nSides) {
-  console.log("rolling di with",nSides," sides");
   let randomFactor = Math.random();
-  console.log("random factor:",randomFactor);
+  // console.log("random factor:",randomFactor);
   let result = Math.floor(randomFactor*nSides)+1
-  console.log("result:",result);
+  // console.log("result:",result);
   return result
 }
 

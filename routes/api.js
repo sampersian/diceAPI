@@ -110,6 +110,22 @@ router.get('/:roll', function(req, res, next) {
                 let nSides = factors[0];
                 let nDrop = factors[1];
 
+                let results = [];
+
+                while (results.length < nDice) {
+                  results.push(rollOneDi(nSides))
+                }
+                console.log('results:', results);
+
+                let resultsHighToLow = results.sort(sortResults).reverse()
+                console.log('results high to low:', resultsHighToLow);
+
+                let resultsToKeep = resultsHighToLow.slice(0,nDice-nDrop);
+                console.log('results to keep:', resultsToKeep);
+
+                box.total = sumResults(resultsToKeep);
+                console.log('sum of results to keep:', sumResults(resultsToKeep));
+
               }
               else if (isBetweenTwoNumbers(rightOfFirstD, 'x')) {
                 console.log("there is a x in the string to the right of the d surrounded by two numbers");
@@ -119,6 +135,28 @@ router.get('/:roll', function(req, res, next) {
                 let factors = isBetweenTwoNumbers(rightOfFirstD, 'x');
                 let nSides = factors[0];
                 let nExplode = factors[1];
+
+                let resultsUnderE = [];
+                let resultsOverE = [];
+
+                while (resultsUnderE.length < nDice) {
+                  let oneRoll = rollOneDi(nSides);
+                  if (oneRoll >= nExplode) {
+                    resultsOverE.push(oneRoll)
+                  } else {
+                    resultsUnderE.push(oneRoll)
+                  }
+                }
+
+                console.log('results under e:', resultsUnderE);
+                console.log('results over e:', resultsOverE);
+
+                let allResults = resultsUnderE.concat(resultsOverE);
+                console.log('all results:', allResults);
+
+                box.total = sumResults(allResults);
+                console.log('sum of all results: ',sumResults(allResults));
+
 
               } else {  // if the right of 'd' string contains neither a 'k', 'x', or 'd', return an error
                 console.log("there is not a k, x, or d in the string to the right of the d");

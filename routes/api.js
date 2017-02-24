@@ -11,54 +11,73 @@ router.get('/:roll', function(req, res, next) {
   }
 
   //This is the raw roll
-  let roll  = req.params.roll;
-  box.entry = roll;
+  let raw_expression  = req.params.roll;
 
-  simpleTests();
+  let split_plusses = raw_expression.split("+");
+  console.log(split_plusses);
 
-  function simpleTests() {
-    console.log('raw roll:', roll);
-    // Check if its a literal value, if so just return it            d
-    if (isXAnyPositiveNumber(roll)) {
-      console.log(roll,"its a positive number with the length of",roll.length);
+  // for each split plus
+
+  // if it can be split by a minus,
+
+    // add the first expression
+    // then, subtract the second expression
+    // the move on to the next split plus
+
+  // otherwise, add the expression and move onto the next split plus
+
+  let split_minuses = raw_expression.split("-");
+  console.log(split_minuses);
+
+  box.entry = raw_expression;
+
+  evaluateExpression(raw_expression);
+
+  function evaluateExpression(expression) {
+    console.log('raw expression:', expression);
+
+    if (isXAnyPositiveNumber(expression)) {  // Check if its a literal value, if so just return it            d
+      console.log(expression,"its a positive number with the length of",expression.length);
       console.log('returing literal d');
       box.format = 'd';
       box.type = 'Literal value'
-      box.total = Number(roll);
+      box.total = Number(expression);
       finishRoll();
-    } else { // If not, check if 'd' is in the string
+    }
+    else {
 
-      if (roll.indexOf('d') === 0) {  // 1) if 'd' is the first item in the string:
+      if (expression.indexOf('d') === 0) {  // if 'd' is the first item in the string:
         console.log('d is the first letter in the string');
         box.format = 'dString'
 
-        let rightOfFirstD = roll.substring(1,roll.length);
+        let rightOfFirstD = expression.substring(1,expression.length);
         console.log("right of first d:",rightOfFirstD);
 
-        if (isXAnyPositiveNumber(rightOfFirstD)) { // 1a) if the only thing after it is a positive number (X):    dX
+        if (isXAnyPositiveNumber(rightOfFirstD)) { // ... and if the only thing after it is a positive number (X):    dX
           box.format = 'dX';
           box.type = 'One die roll'
           box.total = rollOneDi(Number(rightOfFirstD))
-        } else {  // 1b) if the thing after it is not a positve number, return an error
+        }
+        else {  // ... or if the thing after it is not a positve number, return an error
           box.format = 'ERR';
         }
 
-      } else if (roll.indexOf('d') > 0){ // if 'd' is in the string, but is not the first letter
+      }
+      else if (expression.indexOf('d') > 0){ // if 'd' is in the string, but is not the first letter
         console.log('d is NOT the first character in the string, but it is in the string');
         box.format = 'stringd'
 
-        let leftOfFirstD = roll.substring(0,roll.indexOf('d'));
+        let leftOfFirstD = expression.substring(0,expression.indexOf('d'));
         console.log('left of first d:',leftOfFirstD);
 
         if (isXAnyPositiveNumber(leftOfFirstD)) {   // if 'd' is to the right of a positive number (N)
           let nDice = leftOfFirstD;
 
-          let rightOfFirstD = roll.substring(roll.indexOf('d')+1,roll.length);
+          let rightOfFirstD = expression.substring(expression.indexOf('d')+1,expression.length);
           console.log("right of first d:",rightOfFirstD);
 
           if (isXAnyPositiveNumber(rightOfFirstD)) { //if the only thing to the right of 'd' is a positive number (X):    NdX
               console.log("rolling ",leftOfFirstD," dice, each with",rightOfFirstD,"sides");
-
 
               box.format = 'NdX';
               box.type = 'Dice roll';
@@ -66,8 +85,7 @@ router.get('/:roll', function(req, res, next) {
               let numberOfSides = rightOfFirstD;
               let diNumber = 1;
 
-              // roll N dice with X sides
-              while (diNumber <= nDice) {
+              while (diNumber <= nDice) { // roll N dice with X sides
                 //console.log('roll #', diNumber);
                 box.total += rollOneDi(numberOfSides);
                 diNumber += 1;
@@ -76,7 +94,7 @@ router.get('/:roll', function(req, res, next) {
 
           else {  // if the only thing to the right of 'd' is not a number
             box.format = "Ndstring"
-              if (isBetweenTwoNumbers(rightOfFirstD, 'k')) {
+              if (isBetweenTwoNumbers(rightOfFirstD, 'k')) { // if the thing the the right of the 'd' is a string containting a 'k' surrounded by two numbers
                 console.log("there is a k in the string to the right of the d surrounded by two numbers");
                 box.format = "NdXkK";
                 box.type = "Keep highest rolls";
@@ -101,7 +119,7 @@ router.get('/:roll', function(req, res, next) {
                 box.total = sumResults(resultsToKeep);
                 console.log('sum of results to keep:', sumResults(resultsToKeep));
 
-              } else if (isBetweenTwoNumbers(rightOfFirstD, 'd')) {
+              } else if (isBetweenTwoNumbers(rightOfFirstD, 'd')) { // if the thing the the right of the 'd' is a string containting a second 'd' surrounded by two numbers
                 console.log("there is a d in the string to the right of the first d surrounded by two numbers");
                 box.format = "NdXdD";
                 box.type = "Drop lowest rolls";
@@ -127,7 +145,7 @@ router.get('/:roll', function(req, res, next) {
                 console.log('sum of results to keep:', sumResults(resultsToKeep));
 
               }
-              else if (isBetweenTwoNumbers(rightOfFirstD, 'x')) {
+              else if (isBetweenTwoNumbers(rightOfFirstD, 'x')) { // if the thing the the right of the 'd' is a string containting a 'x' surrounded by two numbers
                 console.log("there is a x in the string to the right of the d surrounded by two numbers");
                 box.format = "NdXxE";
                 box.type = "Explosive roll";
@@ -178,15 +196,7 @@ router.get('/:roll', function(req, res, next) {
       }
       finishRoll()
     }
-
-
-            // 2b) if the only thing to the right of 'd' is a string containing 'k', 'x' or a second 'd':
-                  // 2b1) if the string to the right of the first 'd' contains 'k', 'x' or a second 'd' sandwiched between two positive numbers:
-                        //2b1a) if the middle letter in the second string is a 'k':
-                          //
   }
-
-
 
   function finishRoll() {
     res.json(box);

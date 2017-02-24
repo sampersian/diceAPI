@@ -1,10 +1,42 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
 body {
+  min-width: 100%;
+  min-height: 100%;
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 a {
   color: #00B7FF;
+}
+
+h1 {
+  text-align: center;
+}
+
+.diceForm {
+  width: 100%;
+  padding: 25px;
+}
+
+.myFormGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-label {
+  text-align: right;
 }
 
 .myRow {

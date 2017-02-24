@@ -1,8 +1,15 @@
 <h1>Welcome to {{title}}</h1>
 
 <form class="diceForm" method="post">
-  Expression: <input type="text" id="rollExpression" value="" required>
-  <input type="submit" name="name" value="Roll">
+  <div class="form-group">
+    <label class="col-lg-2 control-label">Expression</label>
+    <div class="col-lg-10">
+      <input type="text" id="rollExpression" class="form-control" value="" placeholder="ex. 3d6" required>
+    </div>
+  </div>
+  <div class="form-group myRow">
+    <input type="submit" class="btn btn-success myBtn" name="name" value="Roll">
+  </div>
 </form>
 
 <p id="response">

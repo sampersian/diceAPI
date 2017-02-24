@@ -1,4 +1,4 @@
-$('.diceForm').submit((event)=> {
+$('.diceForm').submit(function(event) {
   event.preventDefault();
   console.log('rolling dice');
   $('#response').empty();

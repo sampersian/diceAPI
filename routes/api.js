@@ -28,10 +28,10 @@ router.get('/:roll', function(req, res, next) {
     console.log('expression 1 total:', expression1Total);
     let expression2Total = evaluateExpression(split_plusses[1]);
     console.log('expression 2 total:', expression2Total);
-    if (expression1Total === "ERR" || expression2Total === "ERR") {
-      box.total = "ERR";
+    if (typeof expression1Total === Number || typeof expression2Total === Number) {
+      box.total = expression1Total + expression2Total;
     } else {
-        box.total = expression1Total + expression2Total;
+      box.total = "ERR";
     }
     finishRoll();
   } else if (split_plusses.length === 1 && split_minuses.length === 2) { // if an expression is being subtracted from abother
@@ -43,10 +43,10 @@ router.get('/:roll', function(req, res, next) {
     console.log('expression 1 total:', expression1Total);
     let expression2Total = evaluateExpression(split_minuses[1]);
     console.log('expression 2 total:', expression2Total);
-    if (expression1Total === "ERR" || expression2Total === "ERR") {
-      box.total = "ERR";
-    } else {
+    if (typeof expression1Total === Number || typeof expression2Total === Number) {
       box.total = expression1Total - expression2Total;
+    } else {
+      box.total = "ERR";
     }
     finishRoll();
   } else if (split_plusses.length === 1 && split_minuses.length === 1) { // if just one expression is being given

@@ -18,3 +18,64 @@
   <h2>Entry: <span class="responseEntry"></span></h2>
   <h2>Type: <span class="responseType"></span> (<span class="responseFormat"></span>)</h2>
 </div>
+
+<div class="responseError">
+  <h2>Error: <span class="responseErrorMessage"></span></h2>
+  <h2>Entry: <span class="responseErrorEntry"></span></h2>
+</div>
+
+<button type="button" id="showDirectionsButton" class="btn btn-info" name="button">Show Directions</button>
+
+<div class="directions">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Expression</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">​X</th>
+        <td>Literal value</td>
+        <td>Where X​ is any positive number.</td>
+      </tr>
+      <tr>
+        <th scope="row">dX</th>
+        <td>One die roll​</td>
+        <td>Where X​ is any positive number. Roll 1​ die with X​ sides.</td>
+      </tr>
+      <tr>
+        <th scope="row">N​dX</th>
+        <td>Dice roll</td>
+        <td>Where N​ is any positive number. Roll N​ dice with X​ sides and sum.</td>
+      </tr>
+      <tr>
+        <th scope="row">N​dX​dD​</th>
+        <td>Drop lowest rolls​</td>
+        <td>Where D​ is any positive number lower than N​. Roll N​ dice with X​ sides and drop the lowest D dice​ and sum.</td>
+      </tr>
+      <tr>
+        <th scope="row">N​dX​kK​</th>
+        <td>Keep highest rolls​</td>
+        <td>Where K​ is any positive number lower than N​. Roll N​ dice with X​ sides and keep the highest K​ dice and sum.</td>
+      </tr>
+      <tr>
+        <th scope="row">N​dX​xE</th>
+        <td>Explosive roll</td>
+        <td>Where E​ is any positive number equal or smaller than X​. Roll N dice with X​ sides. For each value that is equal or greater than E​ roll again until no values need to be re-rolled. Sum all the rolled dice.</td>
+      </tr>
+      <tr>
+        <th scope="row">Expression + Expression</th>
+        <td>Addition</td>
+        <td>Add any two valid expressions together.</td>
+      </tr>
+      <tr>
+        <th scope="row">Expression - Expression</th>
+        <td>Subtraction</td>
+        <td>Subtract any valid expression from any other valid expression.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

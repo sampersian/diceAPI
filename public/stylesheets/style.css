@@ -46,3 +46,21 @@ h1 {
 .response {
   display: none;
 }
+
+.responseError {
+  display: none;
+  color: red;
+}
+
+.responseErrorMessage{
+  color: black;
+  font-weight: bold;
+}
+
+#showDirectionsButton {
+  margin-top: 20px;
+}
+
+.directions {
+  display: none;
+}

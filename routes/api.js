@@ -48,7 +48,7 @@ router.get('/:roll', function(req, res, next) {
     if (typeof expression1Total === 'number' || typeof expression2Total === 'number') {
       box.total = expression1Total - expression2Total;
     } else {
-      box.total = "ERR";
+      box.error = "Invalid Entry. Please see directions.";
     }
     finishRoll();
   } else if (split_plusses.length === 1 && split_minuses.length === 1) { // if just one expression is being given
@@ -57,8 +57,6 @@ router.get('/:roll', function(req, res, next) {
     finishRoll();
   } else {
     console.log("more than two expressions are trying to be added/subtracted. not currently supported.");
-    box.type = 'ERR';
-    box.format = 'ERR';
     box.total = 'ERR';
     box.error = "The adding/subtracting of more than two expressions is not currently supported.";
     finishRoll();
@@ -91,7 +89,6 @@ router.get('/:roll', function(req, res, next) {
 
       if (expression.indexOf('d') === 0) {  // if 'd' is the first item in the string:
         console.log('d is the first letter in the string');
-        box.format = 'dString'
 
         let rightOfFirstD = expression.substring(1,expression.length);
         console.log("right of first d:",rightOfFirstD);
@@ -117,7 +114,7 @@ router.get('/:roll', function(req, res, next) {
           return rollOneDi(Number(rightOfFirstD))
         }
         else {  // ... or if the thing after it is not a positve number, return an error
-          box.format = 'ERR';
+          box.error = "Invalid Entry. Please see directions.";
           return "ERR"
         }
 
@@ -290,20 +287,20 @@ router.get('/:roll', function(req, res, next) {
 
               } else {  // if the right of 'd' string contains neither a 'k', 'x', or 'd', return an error
                 console.log("there is not a k, x, or d in the string to the right of the d");
-                box.format = "ERR";
+                box.error = "Invalid Entry. Please see directions.";
                 return "ERR";
               }
           }
 
         } else { // if 'd' is to the right of anything but a positive number
           console.log('thing before first "d" is not a positive number');
-          box.format = 'ERR';
-          box.total = 'ERR';
+          box.error = "Invalid Entry. Please see directions.";
+          return 'ERR';
         }
 
       } else {  // If 'd' is not in the string, return an error
         console.log('d is NOT in the string');
-        box.format = 'ERR';
+        box.error = "Invalid Entry. Please see directions.";
         return 'ERR';
       }
     }

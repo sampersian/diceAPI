@@ -12,26 +12,55 @@ router.get('/:roll', function(req, res, next) {
 
   //This is the raw roll
   let raw_expression  = req.params.roll;
+  box.entry = raw_expression;
 
   let split_plusses = raw_expression.split("+");
   console.log(split_plusses);
 
-  // for each split plus
-
-  // if it can be split by a minus,
-
-    // add the first expression
-    // then, subtract the second expression
-    // the move on to the next split plus
-
-  // otherwise, add the expression and move onto the next split plus
-
   let split_minuses = raw_expression.split("-");
   console.log(split_minuses);
 
-  box.entry = raw_expression;
-
-  evaluateExpression(raw_expression);
+  if (split_plusses.length === 2 && split_minuses.length === 1) { // if two expressions are being added
+    console.log('there is/are ',split_plusses.length-1,'plus sign(s)');
+    console.log('expression1:', split_plusses[0]);
+    console.log('expression2:', split_plusses[1]);
+    let expression1Total = evaluateExpression(split_plusses[0]);
+    console.log('expression 1 total:', expression1Total);
+    let expression2Total = evaluateExpression(split_plusses[1]);
+    console.log('expression 2 total:', expression2Total);
+    if (expression1Total === "ERR" || expression2Total === "ERR") {
+      box.total = "ERR";
+    } else {
+        box.total = expression1Total + expression2Total;
+    }
+    finishRoll();
+  } else if (split_plusses.length === 1 && split_minuses.length === 2) { // if an expression is being subtracted from abother
+    console.log('there is no plus sign and there is/are ',split_minuses.length-1,'minus signs');
+    console.log('there is/are ',split_minuses.length-1,'plus sign(s)');
+    console.log('expression1:', split_minuses[0]);
+    console.log('expression2:', split_minuses[1]);
+    let expression1Total = evaluateExpression(split_minuses[0]);
+    console.log('expression 1 total:', expression1Total);
+    let expression2Total = evaluateExpression(split_minuses[1]);
+    console.log('expression 2 total:', expression2Total);
+    if (expression1Total === "ERR" || expression2Total === "ERR") {
+      box.total = "ERR";
+    } else {
+      box.total = expression1Total - expression2Total;
+    }
+    finishRoll();
+  } else if (split_plusses.length === 1 && split_minuses.length === 1) { // if just one expression is being given
+    console.log("a single expression was given");
+    box.total = evaluateExpression(raw_expression);
+    finishRoll();
+  } else {
+    console.log("more than two expressions are trying to be added/subtracted. not currently supported.");
+    box.type = 'ERR';
+    box.format = 'ERR';
+    box.total = 'ERR';
+    box.error = "The adding/subtracting of more than two expressions is not currently supported.";
+    finishRoll();
+  }
 
   function evaluateExpression(expression) {
     console.log('raw expression:', expression);
@@ -41,8 +70,7 @@ router.get('/:roll', function(req, res, next) {
       console.log('returing literal d');
       box.format = 'd';
       box.type = 'Literal value'
-      box.total = Number(expression);
-      finishRoll();
+      return Number(expression);
     }
     else {
 
@@ -56,10 +84,11 @@ router.get('/:roll', function(req, res, next) {
         if (isXAnyPositiveNumber(rightOfFirstD)) { // ... and if the only thing after it is a positive number (X):    dX
           box.format = 'dX';
           box.type = 'One die roll'
-          box.total = rollOneDi(Number(rightOfFirstD))
+          return rollOneDi(Number(rightOfFirstD))
         }
         else {  // ... or if the thing after it is not a positve number, return an error
           box.format = 'ERR';
+          return "ERR"
         }
 
       }
@@ -81,15 +110,17 @@ router.get('/:roll', function(req, res, next) {
 
               box.format = 'NdX';
               box.type = 'Dice roll';
+              let tempTotal = 0;
 
               let numberOfSides = rightOfFirstD;
               let diNumber = 1;
 
               while (diNumber <= nDice) { // roll N dice with X sides
                 //console.log('roll #', diNumber);
-                box.total += rollOneDi(numberOfSides);
+                tempTotal += rollOneDi(numberOfSides);
                 diNumber += 1;
               }
+              return tempTotal;
           }
 
           else {  // if the only thing to the right of 'd' is not a number
@@ -116,8 +147,8 @@ router.get('/:roll', function(req, res, next) {
                 let resultsToKeep = resultsHighToLow.slice(0,nKeep);
                 console.log('results to keep:', resultsToKeep);
 
-                box.total = sumResults(resultsToKeep);
                 console.log('sum of results to keep:', sumResults(resultsToKeep));
+                return sumResults(resultsToKeep);
 
               } else if (isBetweenTwoNumbers(rightOfFirstD, 'd')) { // if the thing the the right of the 'd' is a string containting a second 'd' surrounded by two numbers
                 console.log("there is a d in the string to the right of the first d surrounded by two numbers");
@@ -141,8 +172,8 @@ router.get('/:roll', function(req, res, next) {
                 let resultsToKeep = resultsHighToLow.slice(0,nDice-nDrop);
                 console.log('results to keep:', resultsToKeep);
 
-                box.total = sumResults(resultsToKeep);
                 console.log('sum of results to keep:', sumResults(resultsToKeep));
+                return sumResults(resultsToKeep);
 
               }
               else if (isBetweenTwoNumbers(rightOfFirstD, 'x')) { // if the thing the the right of the 'd' is a string containting a 'x' surrounded by two numbers
@@ -172,14 +203,14 @@ router.get('/:roll', function(req, res, next) {
                 let allResults = resultsUnderE.concat(resultsOverE);
                 console.log('all results:', allResults);
 
-                box.total = sumResults(allResults);
                 console.log('sum of all results: ',sumResults(allResults));
+                return sumResults(allResults);
 
 
               } else {  // if the right of 'd' string contains neither a 'k', 'x', or 'd', return an error
                 console.log("there is not a k, x, or d in the string to the right of the d");
                 box.format = "ERR";
-                box.total = "ERR";
+                return "ERR";
               }
           }
 
@@ -192,9 +223,8 @@ router.get('/:roll', function(req, res, next) {
       } else {  // If 'd' is not in the string, return an error
         console.log('d is NOT in the string');
         box.format = 'ERR';
-        box.total = 'ERR';
+        return 'ERR';
       }
-      finishRoll()
     }
   }
 

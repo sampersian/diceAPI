@@ -6,6 +6,8 @@ $('.diceForm').submit(function(event) {
     console.log(res);
     $('.responseTotal').html(res.total);
     $('.responseEntry').html(res.entry);
+    // $('.responseType').html(res.type);
+    // $('.responseFormat').html(res.format);
     $('.response').show();
   })
 })

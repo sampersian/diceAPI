@@ -42,3 +42,7 @@ h1 {
 .myRow {
   padding: 0px 15px 0px 15px;
 }
+
+.response {
+  display: none;
+}
